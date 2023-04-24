@@ -81,6 +81,9 @@ type SigOptions struct {
 
 	// CopiedHeaderFileds
 	CopiedHeaderFields []string
+
+	// BodyHash
+	BodyHash string
 }
 
 // NewSigOptions returns new sigoption with some defaults value
@@ -166,9 +169,14 @@ func Sign(email *[]byte, options SigOptions) error {
 	signHash := strings.Split(options.Algo, "-")
 
 	// hash body
-	bodyHash, err := getBodyHash(&body, signHash[1], options.BodyLength)
-	if err != nil {
-		return err
+	var bodyHash string
+	if options.BodyHash == "" {
+		bodyHash, err = getBodyHash(&body, signHash[1], options.BodyLength)
+		if err != nil {
+			return err
+		}
+	} else {
+		bodyHash = options.BodyHash
 	}
 
 	// Get dkim header base
